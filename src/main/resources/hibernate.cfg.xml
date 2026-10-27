@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-configuration PUBLIC
+        "-//Hibernate/Hibernate Configuration DTD 3.0//EN"
+        "https://hibernate.org/dtd/hibernate-configuration-3.0.dtd">
+
+<hibernate-configuration>
+    <session-factory>
+
+        <property name="hibernate.connection.driver_class">
+            com.mysql.cj.jdbc.Driver
+        </property>
+
+        <property name="hibernate.connection.url">
+            jdbc:mysql://localhost:3305/gestion_bibliotheque?serverTimezone=UTC&amp;characterEncoding=UTF-8
+        </property>
+
+        <property name="hibernate.connection.username">biblio_app</property>
+        <property name="hibernate.connection.password">BiblioApp_2026!</property>
+
+        <property name="hibernate.dialect">
+            org.hibernate.dialect.MySQLDialect
+        </property>
+
+        <property name="hibernate.show_sql">true</property>
+        <property name="hibernate.format_sql">true</property>
+        <property name="hibernate.hbm2ddl.auto">update</property>
+
+        <mapping class="com.biblio.entities.Utilisateurs"/>
+        <mapping class="com.biblio.entities.Livre"/>
+        <mapping class="com.biblio.entities.Auteur"/>
+        <mapping class="com.biblio.entities.Emprunt"/>
+        <mapping class="com.biblio.entities.Avis"/>
+
+    </session-factory>
+</hibernate-configuration>
