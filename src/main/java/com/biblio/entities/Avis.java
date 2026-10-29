@@ -1,29 +1,15 @@
 package com.biblio.entities;
 
 import jakarta.persistence.*;
-import java.time.LocalDateTime;
+import java.io.Serializable;
 
 @Entity
-@Table(
-        name = "avis",
-        uniqueConstraints = @UniqueConstraint(
-                name = "uk_avis_utilisateur_livre",
-                columnNames = {"utilisateur_id", "livre_id"}
-        )
-)
-public class Avis {
+@Table(name = "avis")
+public class Avis implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "utilisateur_id", nullable = false)
-    private Utilisateurs utilisateur;
-
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "livre_id", nullable = false)
-    private Livre livre;
 
     @Column(nullable = false)
     private int note;
@@ -31,40 +17,25 @@ public class Avis {
     @Column(length = 2000)
     private String commentaire;
 
-    @Column(name = "date_creation", nullable = false)
-    private LocalDateTime dateCreation = LocalDateTime.now();
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "utilisateur_id", nullable = false)
+    private Utilisateurs utilisateur;
 
-    public Avis() {
-    }
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "livre_id", nullable = false)
+    private Livre livre;
 
+    public Avis() {}
+
+    // Getters and Setters
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
-
+    public int getNote() { return note; }
+    public void setNote(int note) { this.note = note; }
+    public String getCommentaire() { return commentaire; }
+    public void setCommentaire(String commentaire) { this.commentaire = commentaire; }
     public Utilisateurs getUtilisateur() { return utilisateur; }
-    public void setUtilisateur(Utilisateurs utilisateur) {
-        this.utilisateur = utilisateur;
-    }
-
+    public void setUtilisateur(Utilisateurs utilisateur) { this.utilisateur = utilisateur; }
     public Livre getLivre() { return livre; }
     public void setLivre(Livre livre) { this.livre = livre; }
-
-    public int getNote() { return note; }
-    public void setNote(int note) {
-        if (note < 1 || note > 5) {
-            throw new IllegalArgumentException(
-                    "La note doit être comprise entre 1 et 5."
-            );
-        }
-        this.note = note;
-    }
-
-    public String getCommentaire() { return commentaire; }
-    public void setCommentaire(String commentaire) {
-        this.commentaire = commentaire;
-    }
-
-    public LocalDateTime getDateCreation() { return dateCreation; }
-    public void setDateCreation(LocalDateTime dateCreation) {
-        this.dateCreation = dateCreation;
-    }
 }

@@ -6,25 +6,27 @@
 <hibernate-configuration>
     <session-factory>
 
-        <property name="hibernate.connection.driver_class">
-            com.mysql.cj.jdbc.Driver
-        </property>
-
-        <property name="hibernate.connection.url">
-            jdbc:mysql://localhost:3305/gestion_bibliotheque?serverTimezone=UTC&amp;characterEncoding=UTF-8
-        </property>
-
+        <!-- JDBC Database Connection Settings -->
+        <property name="hibernate.connection.driver_class">com.mysql.cj.jdbc.Driver</property>
+        <property name="hibernate.connection.url">jdbc:mysql://localhost:3306/gestion_bibliotheque?serverTimezone=UTC&amp;characterEncoding=UTF-8</property>
         <property name="hibernate.connection.username">biblio_app</property>
         <property name="hibernate.connection.password">BiblioApp_2026!</property>
 
-        <property name="hibernate.dialect">
-            org.hibernate.dialect.MySQLDialect
-        </property>
+        <!-- Connection Pool Optimization (Built-in pool sizing for dev/local testing) -->
+        <property name="hibernate.connection.pool_size">10</property>
 
+        <!-- Context Management for Servlet/Web Transactions -->
+        <property name="hibernate.current_session_context_class">thread</property>
+
+        <!-- SQL Logging & Performance Formatting -->
         <property name="hibernate.show_sql">true</property>
         <property name="hibernate.format_sql">true</property>
+        <property name="hibernate.highlight_sql">true</property>
+
+        <!-- Schema Generation -->
         <property name="hibernate.hbm2ddl.auto">update</property>
 
+        <!-- Entity Mappings -->
         <mapping class="com.biblio.entities.Utilisateurs"/>
         <mapping class="com.biblio.entities.Livre"/>
         <mapping class="com.biblio.entities.Auteur"/>
