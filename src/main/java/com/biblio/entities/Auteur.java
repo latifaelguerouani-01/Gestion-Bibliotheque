@@ -37,12 +37,8 @@ public class Auteur {
     public void setPrenom(String prenom) { this.prenom = prenom; }
 
     public String getBiographie() { return biographie; }
-    public void setBiographie(String biographie) {
-        this.biographie = biographie;
-    }
+    public void setBiographie(String biographie) { this.biographie = biographie; }
 
     public Set<Livre> getLivres() { return livres; }
-    public void setLivres(Set<Livre> livres) {
-        this.livres = livres;
-    }
+    public void setLivres(Set<Livre> livres) { this.livres = livres; }
 }

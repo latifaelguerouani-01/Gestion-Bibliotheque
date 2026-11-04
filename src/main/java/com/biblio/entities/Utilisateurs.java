@@ -22,11 +22,9 @@ public class Utilisateurs {
     @Column(name = "mot_de_passe", nullable = false)
     private String motDePasse;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
-    private String role = "USER";
-
-    @Column(name = "photo_profil")
-    private String photoProfil;
+    private Role role = Role.USER;
 
     @Column(nullable = false)
     private boolean actif = true;
@@ -44,20 +42,15 @@ public class Utilisateurs {
     public void setPrenom(String prenom) { this.prenom = prenom; }
 
     public String getEmail() { return email; }
-    public void setEmail(String email) { this.email = email; }
+    public void setEmail(String email) {
+        this.email = (email != null) ? email.trim().toLowerCase() : null;
+    }
 
     public String getMotDePasse() { return motDePasse; }
-    public void setMotDePasse(String motDePasse) {
-        this.motDePasse = motDePasse;
-    }
+    public void setMotDePasse(String motDePasse) { this.motDePasse = motDePasse; }
 
-    public String getRole() { return role; }
-    public void setRole(String role) { this.role = role; }
-
-    public String getPhotoProfil() { return photoProfil; }
-    public void setPhotoProfil(String photoProfil) {
-        this.photoProfil = photoProfil;
-    }
+    public Role getRole() { return role; }
+    public void setRole(Role role) { this.role = role; }
 
     public boolean isActif() { return actif; }
     public void setActif(boolean actif) { this.actif = actif; }

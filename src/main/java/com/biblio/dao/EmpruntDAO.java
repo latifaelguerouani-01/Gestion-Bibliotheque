@@ -1,4 +1,3 @@
-
 package com.biblio.dao;
 
 import com.biblio.entities.Emprunt;
@@ -7,36 +6,26 @@ import org.hibernate.Session;
 import org.hibernate.Transaction;
 
 import java.util.List;
+import java.util.function.Consumer;
 
 public class EmpruntDAO {
 
     public void ajouter(Emprunt emprunt) {
-        Transaction transaction = null;
-
-        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-            transaction = session.beginTransaction();
-            session.persist(emprunt);
-            transaction.commit();
-
-        } catch (Exception e) {
-            if (transaction != null && transaction.isActive()) {
-                transaction.rollback();
-            }
-            e.printStackTrace();
-        }
+        execute(s -> s.persist(emprunt));
     }
 
     public List<Emprunt> lister() {
-        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-            return session.createQuery(
-                    "SELECT e FROM Emprunt e JOIN FETCH e.livre JOIN FETCH e.utilisateur ORDER BY e.dateEmprunt DESC", Emprunt.class
+        try (Session s = HibernateUtil.getSessionFactory().openSession()) {
+            return s.createQuery(
+                    "SELECT e FROM Emprunt e JOIN FETCH e.livre JOIN FETCH e.utilisateur ORDER BY e.dateEmprunt DESC",
+                    Emprunt.class
             ).list();
         }
     }
 
     public List<Emprunt> listerParUtilisateur(Long utilisateurId) {
-        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-            return session.createQuery(
+        try (Session s = HibernateUtil.getSessionFactory().openSession()) {
+            return s.createQuery(
                     "SELECT e FROM Emprunt e JOIN FETCH e.livre JOIN FETCH e.utilisateur WHERE e.utilisateur.id = :uid ORDER BY e.dateEmprunt DESC",
                     Emprunt.class
             ).setParameter("uid", utilisateurId).list();
@@ -44,46 +33,38 @@ public class EmpruntDAO {
     }
 
     public Emprunt trouverParId(Long id) {
-        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-            return session.get(Emprunt.class, id);
+        try (Session s = HibernateUtil.getSessionFactory().openSession()) {
+            return s.createQuery(
+                    "SELECT e FROM Emprunt e JOIN FETCH e.livre JOIN FETCH e.utilisateur WHERE e.id = :id",
+                    Emprunt.class
+            ).setParameter("id", id).uniqueResult();
         }
     }
 
     public void modifier(Emprunt emprunt) {
-        Transaction transaction = null;
-
-        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-            transaction = session.beginTransaction();
-            session.merge(emprunt);
-            transaction.commit();
-
-        } catch (Exception e) {
-            if (transaction != null && transaction.isActive()) {
-                transaction.rollback();
-            }
-            e.printStackTrace();
-        }
+        execute(s -> s.merge(emprunt));
     }
 
     public void supprimer(Long id) {
-        Transaction transaction = null;
-
-        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-            transaction = session.beginTransaction();
-
-            Emprunt emprunt = session.get(Emprunt.class, id);
-
+        execute(s -> {
+            Emprunt emprunt = s.get(Emprunt.class, id);
             if (emprunt != null) {
-                session.remove(emprunt);
+                s.remove(emprunt);
             }
+        });
+    }
 
-            transaction.commit();
-
-        } catch (Exception e) {
-            if (transaction != null && transaction.isActive()) {
-                transaction.rollback();
+    private void execute(Consumer<Session> action) {
+        Transaction tx = null;
+        try (Session s = HibernateUtil.getSessionFactory().openSession()) {
+            tx = s.beginTransaction();
+            action.accept(s);
+            tx.commit();
+        } catch (RuntimeException e) {
+            if (tx != null && tx.isActive()) {
+                tx.rollback();
             }
-            e.printStackTrace();
+            throw e;
         }
     }
 }

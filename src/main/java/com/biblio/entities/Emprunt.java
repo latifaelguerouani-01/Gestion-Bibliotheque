@@ -28,8 +28,9 @@ public class Emprunt {
     @Column(name = "date_retour_effective")
     private LocalDate dateRetourEffective;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
-    private String statut = "EN_COURS";
+    private StatutEmprunt statut = StatutEmprunt.EN_COURS;
 
     public Emprunt() {
     }
@@ -38,30 +39,20 @@ public class Emprunt {
     public void setId(Long id) { this.id = id; }
 
     public Utilisateurs getUtilisateur() { return utilisateur; }
-    public void setUtilisateur(Utilisateurs utilisateur) {
-        this.utilisateur = utilisateur;
-    }
+    public void setUtilisateur(Utilisateurs utilisateur) { this.utilisateur = utilisateur; }
 
     public Livre getLivre() { return livre; }
     public void setLivre(Livre livre) { this.livre = livre; }
 
     public LocalDate getDateEmprunt() { return dateEmprunt; }
-    public void setDateEmprunt(LocalDate dateEmprunt) {
-        this.dateEmprunt = dateEmprunt;
-    }
+    public void setDateEmprunt(LocalDate dateEmprunt) { this.dateEmprunt = dateEmprunt; }
 
     public LocalDate getDateRetourPrevue() { return dateRetourPrevue; }
-    public void setDateRetourPrevue(LocalDate dateRetourPrevue) {
-        this.dateRetourPrevue = dateRetourPrevue;
-    }
+    public void setDateRetourPrevue(LocalDate dateRetourPrevue) { this.dateRetourPrevue = dateRetourPrevue; }
 
-    public LocalDate getDateRetourEffective() {
-        return dateRetourEffective;
-    }
-    public void setDateRetourEffective(LocalDate dateRetourEffective) {
-        this.dateRetourEffective = dateRetourEffective;
-    }
+    public LocalDate getDateRetourEffective() { return dateRetourEffective; }
+    public void setDateRetourEffective(LocalDate dateRetourEffective) { this.dateRetourEffective = dateRetourEffective; }
 
-    public String getStatut() { return statut; }
-    public void setStatut(String statut) { this.statut = statut; }
+    public StatutEmprunt getStatut() { return statut; }
+    public void setStatut(StatutEmprunt statut) { this.statut = statut; }
 }

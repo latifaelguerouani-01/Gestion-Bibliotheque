@@ -6,30 +6,14 @@ import org.hibernate.Session;
 import org.hibernate.Transaction;
 
 import java.util.List;
+import java.util.function.Consumer;
 
 public class UtilisateurDAO {
 
     public void ajouter(Utilisateurs utilisateur) {
-        Transaction transaction = null;
-
-        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-            transaction = session.beginTransaction();
-            session.persist(utilisateur);
-            transaction.commit();
-
-        } catch (Exception e) {
-            if (transaction != null && transaction.isActive()) {
-                transaction.rollback();
-            }
-            e.printStackTrace();
-            throw new IllegalStateException("Impossible d'enregistrer le compte.", e);
-        }
+        execute(s -> s.persist(utilisateur));
     }
 
-    /**
-     * Retrouve un compte pour la connexion. L'adresse e-mail est l'identifiant unique :
-     * le nom n'est pas unique et ne doit jamais servir à s'authentifier.
-     */
     public Utilisateurs trouverParIdentifiant(String identifiant) {
         return trouverParEmail(identifiant);
     }
@@ -38,8 +22,8 @@ public class UtilisateurDAO {
         if (email == null || email.trim().isEmpty()) return null;
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             return session.createQuery(
-                    "FROM Utilisateurs u WHERE LOWER(u.email) = LOWER(:email)",
-                    Utilisateurs.class)
+                            "FROM Utilisateurs u WHERE LOWER(u.email) = LOWER(:email)",
+                            Utilisateurs.class)
                     .setParameter("email", email.trim())
                     .uniqueResult();
         }
@@ -57,9 +41,7 @@ public class UtilisateurDAO {
 
     public List<Utilisateurs> lister() {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-            return session.createQuery(
-                    "FROM Utilisateurs", Utilisateurs.class
-            ).list();
+            return session.createQuery("FROM Utilisateurs u ORDER BY u.nom, u.prenom", Utilisateurs.class).list();
         }
     }
 
@@ -70,40 +52,29 @@ public class UtilisateurDAO {
     }
 
     public void modifier(Utilisateurs utilisateur) {
-        Transaction transaction = null;
-
-        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-            transaction = session.beginTransaction();
-            session.merge(utilisateur);
-            transaction.commit();
-
-        } catch (Exception e) {
-            if (transaction != null && transaction.isActive()) {
-                transaction.rollback();
-            }
-            e.printStackTrace();
-        }
+        execute(s -> s.merge(utilisateur));
     }
 
     public void supprimer(Long id) {
-        Transaction transaction = null;
-
-        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-            transaction = session.beginTransaction();
-
-            Utilisateurs utilisateur = session.get(Utilisateurs.class, id);
-
+        execute(s -> {
+            Utilisateurs utilisateur = s.get(Utilisateurs.class, id);
             if (utilisateur != null) {
-                session.remove(utilisateur);
+                s.remove(utilisateur);
             }
+        });
+    }
 
-            transaction.commit();
-
-        } catch (Exception e) {
-            if (transaction != null && transaction.isActive()) {
-                transaction.rollback();
+    private void execute(Consumer<Session> action) {
+        Transaction tx = null;
+        try (Session s = HibernateUtil.getSessionFactory().openSession()) {
+            tx = s.beginTransaction();
+            action.accept(s);
+            tx.commit();
+        } catch (RuntimeException e) {
+            if (tx != null && tx.isActive()) {
+                tx.rollback();
             }
-            e.printStackTrace();
+            throw e;
         }
     }
 }

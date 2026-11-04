@@ -41,9 +41,7 @@ public class Avis {
     public void setId(Long id) { this.id = id; }
 
     public Utilisateurs getUtilisateur() { return utilisateur; }
-    public void setUtilisateur(Utilisateurs utilisateur) {
-        this.utilisateur = utilisateur;
-    }
+    public void setUtilisateur(Utilisateurs utilisateur) { this.utilisateur = utilisateur; }
 
     public Livre getLivre() { return livre; }
     public void setLivre(Livre livre) { this.livre = livre; }
@@ -51,20 +49,14 @@ public class Avis {
     public int getNote() { return note; }
     public void setNote(int note) {
         if (note < 1 || note > 5) {
-            throw new IllegalArgumentException(
-                    "La note doit être comprise entre 1 et 5."
-            );
+            throw new IllegalArgumentException("La note doit être comprise entre 1 et 5.");
         }
         this.note = note;
     }
 
     public String getCommentaire() { return commentaire; }
-    public void setCommentaire(String commentaire) {
-        this.commentaire = commentaire;
-    }
+    public void setCommentaire(String commentaire) { this.commentaire = commentaire; }
 
     public LocalDateTime getDateCreation() { return dateCreation; }
-    public void setDateCreation(LocalDateTime dateCreation) {
-        this.dateCreation = dateCreation;
-    }
+    public void setDateCreation(LocalDateTime dateCreation) { this.dateCreation = dateCreation; }
 }

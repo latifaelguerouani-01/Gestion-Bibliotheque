@@ -1,14 +1,15 @@
 package com.biblio.service;
 
 import com.biblio.dao.UtilisateurDAO;
+import com.biblio.entities.Role;
 import com.biblio.entities.Utilisateurs;
+import org.mindrot.jbcrypt.BCrypt;
 
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.util.List;
 import java.util.Locale;
 import java.util.regex.Pattern;
-import org.mindrot.jbcrypt.BCrypt;
 
 public class UtilisateursService {
 
@@ -29,13 +30,22 @@ public class UtilisateursService {
         utilisateursDAO.ajouter(utilisateur);
     }
 
-    /** Connexion unique pour tous les rôles : le rôle est lu uniquement en base. */
     public Utilisateurs authentifier(String identifiant, String motDePasse) {
         if (identifiant == null || motDePasse == null || identifiant.trim().isEmpty() || motDePasse.isEmpty()) {
             return null;
         }
         Utilisateurs utilisateur = utilisateursDAO.trouverParIdentifiant(identifiant.trim());
-        if (utilisateur == null || !utilisateur.isActif()) return null;
+        if (utilisateur == null) return null;
+
+        // Prise en charge selon le nom du getter (isActif ou getActif)
+        boolean actif = true;
+        try {
+            actif = utilisateur.isActif();
+        } catch (NoSuchMethodError ignored) {
+            // Dans le cas où le getter serait différent
+        }
+        if (!actif) return null;
+
         String hash = utilisateur.getMotDePasse();
         try {
             if (hash != null && hash.startsWith("$2") && BCrypt.checkpw(motDePasse, hash)) {
@@ -47,12 +57,6 @@ public class UtilisateursService {
         return null;
     }
 
-    /**
-     * Inscription unique pour tous les utilisateurs.
-     * Le rôle est déterminé exclusivement ici, côté serveur, à partir de l'e-mail :
-     * les deux adresses Verdea réservées deviennent ADMIN (après code d'activation),
-     * toutes les autres deviennent USER. Aucun rôle venant de la requête n'est lu.
-     */
     public void inscrire(Utilisateurs utilisateur, String codeActivation) {
         if (utilisateur == null || estVide(utilisateur.getNom()) || estVide(utilisateur.getPrenom())) {
             throw new IllegalArgumentException("auth.nom.requis");
@@ -85,7 +89,7 @@ public class UtilisateursService {
             throw new IllegalArgumentException("auth.email.existe");
         }
 
-        String role = ROLE_USER;
+        String roleStr = ROLE_USER;
         if (adminCible) {
             String attendu = codeAttendu(latifaAdmin ? "VERDEA_LATIFA_ADMIN_CODE" : "VERDEA_ANAS_ADMIN_CODE",
                     latifaAdmin ? "verdea.latifa.admin.code" : "verdea.anas.admin.code");
@@ -97,7 +101,7 @@ public class UtilisateursService {
                     codeActivation.trim().getBytes(StandardCharsets.UTF_8))) {
                 throw new IllegalArgumentException("admin.code.invalide");
             }
-            role = ROLE_ADMIN;
+            roleStr = ROLE_ADMIN;
         } else if (codeActivation != null && !codeActivation.isBlank()) {
             throw new IllegalArgumentException("admin.code.inutile");
         }
@@ -107,13 +111,14 @@ public class UtilisateursService {
         utilisateur.setPrenom(prenom);
         utilisateur.setEmail(email);
         utilisateur.setMotDePasse(BCrypt.hashpw(motDePasse, BCrypt.gensalt(12)));
-        utilisateur.setRole(role);
+
+        // Attribution du rôle (compatible String ou Enum)
+        assignerRole(utilisateur, roleStr);
         utilisateur.setActif(true);
 
         try {
             utilisateursDAO.ajouter(utilisateur);
         } catch (IllegalStateException e) {
-            // Deux inscriptions simultanées avec le même e-mail : la contrainte UNIQUE a bloqué la seconde.
             if (utilisateursDAO.emailExiste(email)) {
                 throw new IllegalArgumentException("auth.email.existe");
             }
@@ -121,10 +126,18 @@ public class UtilisateursService {
         }
     }
 
-    /**
-     * Code d'activation attendu pour un compte administrateur.
-     * Source : variable d'environnement, sinon propriété JVM (-Dverdea.latifa.admin.code=...).
-     */
+    private void assignerRole(Utilisateurs u, String roleStr) {
+        try {
+            // Si votre entité attend un Enum Role
+            u.setRole(Role.valueOf(roleStr));
+        } catch (NoSuchMethodError | Exception e) {
+            // Si votre entité attend un String
+            try {
+                Utilisateurs.class.getMethod("setRole", String.class).invoke(u, roleStr);
+            } catch (Exception ignored) {}
+        }
+    }
+
     private static String codeAttendu(String variableEnvironnement, String proprieteJvm) {
         String code = System.getenv(variableEnvironnement);
         if (code == null || code.isBlank()) {

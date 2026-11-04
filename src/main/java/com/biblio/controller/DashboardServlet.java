@@ -9,10 +9,12 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+
 import java.io.IOException;
 
 @WebServlet(urlPatterns = {"/user/dashboard", "/admin/dashboard"})
 public class DashboardServlet extends HttpServlet {
+
     private final LivreService livres = new LivreService();
     private final UtilisateursService utilisateurs = new UtilisateursService();
     private final EmpruntService emprunts = new EmpruntService();
@@ -22,28 +24,33 @@ public class DashboardServlet extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         req.setAttribute("livres", livres.afficherLivres());
         boolean admin = "/admin/dashboard".equals(req.getServletPath());
+
         if (admin) {
-            // Statistiques : une valeur absente s'affiche "—" au lieu de bloquer le tableau de bord.
             try {
                 req.setAttribute("nbUtilisateurs", utilisateurs.afficherUtilisateurs().size());
-            } catch (RuntimeException ignored) { }
+            } catch (RuntimeException ignored) {}
             try {
                 long enCours = emprunts.afficherEmprunts().stream()
-                        .filter(e -> "EN_COURS".equals(e.getStatut())).count();
+                        .filter(e -> "EN_COURS".equalsIgnoreCase(String.valueOf(e.getStatut())))
+                        .count();
                 req.setAttribute("nbEmpruntsEnCours", enCours);
-            } catch (RuntimeException ignored) { }
+            } catch (RuntimeException ignored) {}
             try {
                 req.setAttribute("nbAvis", avis.afficherAvis().size());
-            } catch (RuntimeException ignored) { }
+            } catch (RuntimeException ignored) {}
         } else {
             try {
-                Object id = req.getSession().getAttribute("userId");
-                long actifs = emprunts.afficherEmpruntsUtilisateur(Long.valueOf(String.valueOf(id))).stream()
-                        .filter(e -> "EN_COURS".equals(e.getStatut())).count();
-                req.setAttribute("nbEmpruntsActifs", actifs);
-            } catch (RuntimeException ignored) { }
+                Object idObj = (req.getSession(false) != null) ? req.getSession(false).getAttribute("userId") : null;
+                if (idObj != null) {
+                    long actifs = emprunts.afficherEmpruntsUtilisateur(Long.parseLong(String.valueOf(idObj))).stream()
+                            .filter(e -> "EN_COURS".equalsIgnoreCase(String.valueOf(e.getStatut())))
+                            .count();
+                    req.setAttribute("nbEmpruntsActifs", actifs);
+                }
+            } catch (RuntimeException ignored) {}
         }
-        req.getRequestDispatcher(admin ? "/WEB-INF/views/admin-dashboard.jsp"
-                : "/WEB-INF/views/user-dashboard.jsp").forward(req, resp);
+
+        req.getRequestDispatcher(admin ? "/WEB-INF/views/admin-dashboard.jsp" : "/WEB-INF/views/user-dashboard.jsp")
+                .forward(req, resp);
     }
 }

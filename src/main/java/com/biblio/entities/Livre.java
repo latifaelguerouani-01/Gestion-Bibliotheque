@@ -51,27 +51,32 @@ public class Livre {
     public void setIsbn(String isbn) { this.isbn = isbn; }
 
     public String getDescription() { return description; }
-    public void setDescription(String description) {
-        this.description = description;
-    }
+    public void setDescription(String description) { this.description = description; }
 
     public String getCouverture() { return couverture; }
-    public void setCouverture(String couverture) {
-        this.couverture = couverture;
-    }
+    public void setCouverture(String couverture) { this.couverture = couverture; }
 
     public String getPdfPath() { return pdfPath; }
-    public void setPdfPath(String pdfPath) {
-        this.pdfPath = pdfPath;
-    }
+    public void setPdfPath(String pdfPath) { this.pdfPath = pdfPath; }
 
     public boolean isDisponible() { return disponible; }
-    public void setDisponible(boolean disponible) {
-        this.disponible = disponible;
-    }
+    public void setDisponible(boolean disponible) { this.disponible = disponible; }
 
     public Set<Auteur> getAuteurs() { return auteurs; }
-    public void setAuteurs(Set<Auteur> auteurs) {
-        this.auteurs = auteurs;
+    public void setAuteurs(Set<Auteur> auteurs) { this.auteurs = auteurs; }
+
+    // Synchronisation de la relation bidirectionnelle
+    public void addAuteur(Auteur auteur) {
+        if (auteur != null) {
+            this.auteurs.add(auteur);
+            auteur.getLivres().add(this);
+        }
+    }
+
+    public void removeAuteur(Auteur auteur) {
+        if (auteur != null) {
+            this.auteurs.remove(auteur);
+            auteur.getLivres().remove(this);
+        }
     }
 }
