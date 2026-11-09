@@ -2,6 +2,7 @@ package com.biblio.controller;
 
 import com.biblio.service.AvisService;
 import com.biblio.service.EmpruntService;
+import com.biblio.service.FavoriService;
 import com.biblio.service.LivreService;
 import com.biblio.service.UtilisateursService;
 import jakarta.servlet.ServletException;
@@ -18,6 +19,7 @@ public class DashboardServlet extends HttpServlet {
     private final LivreService livres = new LivreService();
     private final UtilisateursService utilisateurs = new UtilisateursService();
     private final EmpruntService emprunts = new EmpruntService();
+    private final FavoriService favoris = new FavoriService();
     private final AvisService avis = new AvisService();
 
     @Override
@@ -40,13 +42,18 @@ public class DashboardServlet extends HttpServlet {
             } catch (RuntimeException ignored) {}
         } else {
             try {
+                emprunts.retournerEmpruntsExpires();
                 Object idObj = (req.getSession(false) != null) ? req.getSession(false).getAttribute("userId") : null;
                 if (idObj != null) {
-                    long actifs = emprunts.afficherEmpruntsUtilisateur(Long.parseLong(String.valueOf(idObj))).stream()
+                    Long id = Long.parseLong(String.valueOf(idObj));
+                    long actifs = emprunts.afficherEmpruntsUtilisateur(id).stream()
                             .filter(e -> "EN_COURS".equalsIgnoreCase(String.valueOf(e.getStatut())))
                             .count();
                     req.setAttribute("nbEmpruntsActifs", actifs);
+                    req.setAttribute("nbFavoris", favoris.afficherFavoris(id).size());
                 }
+                req.setAttribute("nbLivresDisponibles", livres.afficherLivres().stream()
+                        .filter(l -> l.isDisponible()).count());
             } catch (RuntimeException ignored) {}
         }
 

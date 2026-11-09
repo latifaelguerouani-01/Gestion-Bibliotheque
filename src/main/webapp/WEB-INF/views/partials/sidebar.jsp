@@ -13,8 +13,12 @@
       <a class="${activePage eq 'auteurs' ? 'active' : ''}" href="${pageContext.request.contextPath}/auteurs">
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L8 18l-4 1 1-4Z"/></svg><span>Auteurs</span></a>
     </c:if>
+    <c:if test="${not isAdmin}">
+      <a class="${activePage eq 'favoris' ? 'active' : ''}" href="${pageContext.request.contextPath}/favoris">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8l1.1 1.1L12 21l7.8-7.5 1.1-1.1a5.5 5.5 0 0 0-.1-7.8Z"/></svg><span>Mes favoris</span></a>
+    </c:if>
     <a class="${activePage eq 'emprunts' ? 'active' : ''}" href="${pageContext.request.contextPath}/emprunts">
-      <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><span>${isAdmin ? 'Emprunts' : 'Mes emprunts'}</span></a>
+      <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><span>${isAdmin ? 'Emprunts' : 'Mon panier'}</span></a>
   </nav>
   <div class="sidebar-bottom">
     <div class="user-chip ${isAdmin ? 'is-admin' : ''}">

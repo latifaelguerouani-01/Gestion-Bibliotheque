@@ -56,6 +56,12 @@ public class Livre {
     public String getCouverture() { return couverture; }
     public void setCouverture(String couverture) { this.couverture = couverture; }
 
+    /** Vrai si la couverture est un fichier téléversé (servi par /media/covers/...). */
+    @Transient
+    public boolean isCouvertureLocale() {
+        return couverture != null && couverture.startsWith("media/covers/");
+    }
+
     public String getPdfPath() { return pdfPath; }
     public void setPdfPath(String pdfPath) { this.pdfPath = pdfPath; }
 

@@ -50,6 +50,13 @@
             <version>3.0.1</version>
         </dependency>
 
+        <!-- Aperçu : extraction des 10 premières pages d'un PDF -->
+        <dependency>
+            <groupId>org.apache.pdfbox</groupId>
+            <artifactId>pdfbox</artifactId>
+            <version>3.0.4</version>
+        </dependency>
+
         <!-- Hashage des mots de passe -->
         <dependency>
             <groupId>org.mindrot</groupId>

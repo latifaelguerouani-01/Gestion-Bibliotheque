@@ -50,5 +50,29 @@ Utiliser deux codes différents et confidentiels. Si le code n'est pas configur�
 - Logo : `src/main/webapp/assets/verdea-logo.png` (fond transparent). Favicon : `favicon.ico`.
 
 ## État du développement
-Connexion, inscription, dashboards, catalogue, auteurs et emprunts sont en place. Les modules Favoris, Panier, Reader PDF,
-quiz, rapports et la traduction complète de toutes les pages restent à intégrer et tester.
+Connexion, inscription, dashboards, catalogue, auteurs et emprunts sont en place. Le module Favoris vient d'être intégré : ajout depuis le catalogue, affichage des favoris propres à chaque utilisateur et retrait d'un favori. Le panier de lecture et le lecteur PDF sont maintenant intégrés dans cette version. Les annotations, quiz, rapports et la traduction complète de toutes les pages restent à intégrer et tester.
+
+## Module Favoris
+- Accès utilisateur via `/favoris` et le lien « Mes favoris » dans la sidebar.
+- Ajout d'un livre depuis le catalogue et retrait depuis la page Favoris.
+- Chaque favori est associé à un utilisateur et à un livre ; un même livre ne peut être enregistré deux fois dans les favoris du même utilisateur.
+- La table `favoris` est créée/mise à jour par Hibernate grâce à `hibernate.hbm2ddl.auto=update` et au mapping `Favori`.
+- Les administrateurs ne peuvent pas accéder à cette fonctionnalité utilisateur.
+
+
+## Panier de lecture et emprunts
+- L'utilisateur peut emprunter un livre depuis le Catalogue ou depuis ses Favoris.
+- La durée est choisie au moment de l'emprunt, entre 1 et 90 jours.
+- Le livre est marqué indisponible pendant l'emprunt ; un livre indisponible ne peut pas être emprunté.
+- La page « Mon panier » (`/emprunts`) affiche les emprunts de l'utilisateur, les dates, le statut, le lien de lecture PDF et le retour anticipé.
+- Le retour anticipé enregistre la date effective et rend le livre disponible.
+- Un traitement serveur (`EmpruntExpirationListener`) vérifie chaque heure les emprunts dont la date prévue est dépassée et les clôture automatiquement. La vérification est également exécutée à l'ouverture du panier et du lecteur.
+- Ajout d'un livre (ADMIN) : dans le catalogue, le formulaire permet de choisir le PDF et l'image de couverture directement depuis l'ordinateur (« Choisir un fichier »). Le chemin du fichier est enregistré en base de données (`pdf_path`, `couverture`).
+- Les fichiers téléversés sont stockés hors de l'application, dans `${user.home}/verdea-uploads/` (sous-dossiers `pdf/` et `covers/`). Ce dossier peut être changé avec `-Dverdea.upload.dir=...` ou la variable d'environnement `VERDEA_UPLOAD_DIR`. Limites : PDF 50 Mo, couverture 5 Mo.
+- Les anciens livres avec un chemin `/uploads/mon-livre.pdf` ou une URL HTTP(S) continuent de fonctionner.
+- L'accès au lecteur est réservé au propriétaire d'un emprunt actif.
+
+## Aperçu, lecture et reprise
+
+- **Aperçu** : depuis « Mes favoris », le bouton « Aperçu (10 pages) » ouvre uniquement les 10 premières pages du PDF (le serveur n'envoie pas le reste). Nécessite la dépendance PDFBox (déjà dans `pom.xml`).
+- **Lecture** : champ « Ma page » + « Enregistrer ma page » (colonne `derniere_page` de la table `emprunts`, créée automatiquement par Hibernate) et bouton « Retourner le livre » en bas de la page.

@@ -36,15 +36,15 @@
         <section class="stat-grid">
             <article class="stat-card">
                 <div class="stat-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8l1.1 1.1L12 21l7.8-7.5 1.1-1.1a5.5 5.5 0 0 0-.1-7.8Z"/></svg></div>
-                <p>Mes favoris</p><strong>0</strong>
+                <p>Mes favoris</p><strong>${empty nbFavoris ? 0 : nbFavoris}</strong>
             </article>
             <article class="stat-card">
                 <div class="stat-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 3h2l2.4 12.2a2 2 0 0 0 2 1.6h8.8a2 2 0 0 0 2-1.6L22 7H6"/><circle cx="10" cy="21" r="1"/><circle cx="18" cy="21" r="1"/></svg></div>
-                <p>Dans mon panier</p><strong>0</strong>
+                <p>Dans mon panier</p><strong>${empty nbEmpruntsActifs ? 0 : nbEmpruntsActifs}</strong>
             </article>
             <article class="stat-card">
-                <div class="stat-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></div>
-                <p>Emprunts actifs</p><strong>${empty nbEmpruntsActifs ? 0 : nbEmpruntsActifs}</strong>
+                <div class="stat-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2Z"/></svg></div>
+                <p>Livres disponibles</p><strong>${empty nbLivresDisponibles ? 0 : nbLivresDisponibles}</strong>
             </article>
         </section>
 

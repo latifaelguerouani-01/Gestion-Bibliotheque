@@ -32,6 +32,10 @@ public class Emprunt {
     @Column(nullable = false, length = 20)
     private StatutEmprunt statut = StatutEmprunt.EN_COURS;
 
+    /** Dernière page enregistrée par le lecteur (null = pas encore enregistrée). */
+    @Column(name = "derniere_page")
+    private Integer dernierePage;
+
     public Emprunt() {
     }
 
@@ -52,6 +56,9 @@ public class Emprunt {
 
     public LocalDate getDateRetourEffective() { return dateRetourEffective; }
     public void setDateRetourEffective(LocalDate dateRetourEffective) { this.dateRetourEffective = dateRetourEffective; }
+
+    public Integer getDernierePage() { return dernierePage; }
+    public void setDernierePage(Integer dernierePage) { this.dernierePage = dernierePage; }
 
     public StatutEmprunt getStatut() { return statut; }
     public void setStatut(StatutEmprunt statut) { this.statut = statut; }

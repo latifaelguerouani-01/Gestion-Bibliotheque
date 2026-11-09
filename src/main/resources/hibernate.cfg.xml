@@ -11,7 +11,7 @@
         </property>
 
         <property name="hibernate.connection.url">
-            jdbc:mysql://localhost:3306/gestion_bibliotheque?serverTimezone=UTC&amp;characterEncoding=UTF-8
+            jdbc:mysql://localhost:3305/gestion_bibliotheque?serverTimezone=UTC&amp;characterEncoding=UTF-8
         </property>
 
         <property name="hibernate.connection.username">biblio_app</property>
@@ -30,6 +30,7 @@
         <mapping class="com.biblio.entities.Auteur"/>
         <mapping class="com.biblio.entities.Emprunt"/>
         <mapping class="com.biblio.entities.Avis"/>
+        <mapping class="com.biblio.entities.Favori"/>
 
     </session-factory>
 </hibernate-configuration>
