@@ -32,7 +32,7 @@ public class Emprunt {
     @Column(nullable = false, length = 20)
     private StatutEmprunt statut = StatutEmprunt.EN_COURS;
 
-    /** Dernière page enregistrée par le lecteur (null = pas encore enregistrée). */
+
     @Column(name = "derniere_page")
     private Integer dernierePage;
 

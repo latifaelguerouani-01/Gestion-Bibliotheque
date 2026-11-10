@@ -15,9 +15,7 @@ import java.util.function.Consumer;
 
 public class EmpruntDAO {
 
-    /**
-     * Crée une emprunt en verrouillant le livre pour éviter deux emprunts simultanés.
-     */
+
     public void emprunter(Long utilisateurId, Long livreId, int dureeJours) {
         Transaction tx = null;
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
@@ -118,9 +116,7 @@ public class EmpruntDAO {
         }
     }
 
-    /**
-     * Retour automatique après la fin de la journée d'échéance.
-     */
+
     public int retournerEmpruntsExpires() {
         Transaction tx = null;
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {

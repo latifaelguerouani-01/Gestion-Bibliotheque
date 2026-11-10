@@ -126,7 +126,6 @@ public class LivreServlet extends HttpServlet {
         }
     }
 
-    /** Supprime les fichiers téléversés pendant une requête qui a finalement échoué. */
     private void nettoyer(String pdf, String couverture) {
         UploadUtil.supprimer(pdf);
         UploadUtil.supprimer(couverture);
